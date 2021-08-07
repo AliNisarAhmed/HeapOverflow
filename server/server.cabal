@@ -38,6 +38,7 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
+    , esqueleto
     , monad-logger
     , mtl
     , persistent
@@ -66,6 +67,7 @@ executable server
       aeson
     , base
     , bytestring
+    , esqueleto
     , monad-logger
     , mtl
     , persistent
@@ -96,6 +98,7 @@ test-suite server-test
       aeson
     , base
     , bytestring
+    , esqueleto
     , hspec
     , hspec-wai
     , hspec-wai-json

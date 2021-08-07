@@ -8,12 +8,23 @@ import Server.Database.Setup (runDb)
 import Database.Persist (Entity (..), selectList)
 import Server.Database.Model
 import Servant
+import Database.Persist (Entity(..), selectList, insertEntity)
+import Server.Database.Setup (runDb, DbQuery)
+import Database.Esqueleto (select, from) 
 
 type QuestionApi =
-  "api" :> "whoami" :> Get '[JSON] [Entity Question]
+    "api" :> "questions" :> 
+  ( 
+    Get '[JSON] [Entity Question]
+  )
 
 questionServer :: ServerT QuestionApi App
-questionServer = whoami
+questionServer = getQuestions
 
-whoami :: App [Entity Question]
-whoami = runDb $ selectList [] []
+getQuestions :: App [Entity Question] 
+getQuestions = runDb getAllQuestions
+
+
+getAllQuestions :: DbQuery [Entity Question]
+getAllQuestions = 
+  select $ from $ \q -> return q
