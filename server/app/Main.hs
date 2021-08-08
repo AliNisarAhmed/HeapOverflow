@@ -14,6 +14,6 @@ main = do
   pool <- connectDb connectionString
   migrateDb pool
   let cfg = Config pool
-  let port = 8080
-  run port $ app cfg
+  let port = 5000
   putStrLn $ "Server started on port " <> show port
+  run port $ app cfg

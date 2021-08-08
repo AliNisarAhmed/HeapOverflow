@@ -31,14 +31,32 @@ import Database.Persist.TH
     sqlSettings,
   )
 import GHC.Generics (Generic)
+import Data.Text (Text)
 
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
   [persistLowerCase|
+
+User json 
+    firstname Text 
+    surname Text 
+    email Text 
+    deriving Eq Show 
+
 Question json
-    title String
-    content String
-    created UTCTime default=now()
+    title Text
+    content Text
     user_id Int
+    created_at UTCTime default=now()
+    updated_at UTCTime default=now()
     deriving Eq Show
+
+Answer json 
+    questionId QuestionId 
+    context Text 
+    user_id Int 
+    created_at UTCTime default=now()
+    updated_at UTCTime default=now()
+    deriving Eq Show
+
 |]

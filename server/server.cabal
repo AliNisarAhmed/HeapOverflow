@@ -27,8 +27,10 @@ library
       Lib
       Server
       Server.API.QuestionAPI
+      Server.API.Requests
       Server.Config
       Server.Database.Model
+      Server.Database.Queries
       Server.Database.Setup
   other-modules:
       Paths_server
