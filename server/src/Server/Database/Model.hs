@@ -40,7 +40,9 @@ share
 User json 
     firstname Text 
     surname Text 
+    Username firstname surname
     email Text 
+    UniqueEmail email 
     deriving Eq Show 
 
 Question json

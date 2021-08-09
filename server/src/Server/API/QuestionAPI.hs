@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 
-module Server.API.QuestionAPI (questionServer, QuestionApi) where
+module Server.API.QuestionAPI (questionServer, QuestionAPI) where
 
 import Server.Config (App (..))
 import Server.Database.Setup ( runDb, runDb, DbQuery )
@@ -17,14 +17,14 @@ import Server.API.Requests
 import Control.Monad.IO.Class (liftIO)
 import Data.Time (getCurrentTime)
 
-type QuestionApi =
+type QuestionAPI =
     "api" :> "questions" :>
   (
     Get '[JSON] [Entity Question] :<|>
     ReqBody '[JSON] CreateQuestionRequest :> Post '[JSON] (Entity Question)
   )
 
-questionServer :: ServerT QuestionApi App
+questionServer :: ServerT QuestionAPI App
 questionServer = getQuestions :<|> postQuestion
 
 getQuestions :: App [Entity Question]

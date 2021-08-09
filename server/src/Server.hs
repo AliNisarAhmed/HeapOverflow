@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeOperators #-}
+
 module Server
   ( server,
     API,
@@ -5,14 +7,15 @@ module Server
 where
 
 import Server.API.QuestionAPI
-  ( QuestionApi,
+  ( QuestionAPI,
     questionServer,
   )
 import Server.Config (App (..))
 import Data.Aeson
 import Servant
+import Server.API.AnswerAPI (answerServer, AnswerAPI)
 
-type API = QuestionApi
+type API = QuestionAPI :<|> AnswerAPI
 
 server :: ServerT API App
-server = questionServer
+server = questionServer :<|> answerServer
