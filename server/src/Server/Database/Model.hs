@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE EmptyDataDecls #-}
@@ -13,7 +14,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE DataKinds #-}
 
 module Server.Database.Model where
 
@@ -21,6 +21,7 @@ import Data.Aeson
   ( FromJSON,
     ToJSON,
   )
+import Data.Text (Text)
 import Data.Time (UTCTime)
 import Database.Persist.Sql
 import Database.Persist.TH
@@ -31,7 +32,6 @@ import Database.Persist.TH
     sqlSettings,
   )
 import GHC.Generics (Generic)
-import Data.Text (Text)
 
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -55,7 +55,7 @@ Question json
 
 Answer json 
     questionId QuestionId 
-    context Text 
+    content Text 
     user_id Int 
     created_at UTCTime default=now()
     updated_at UTCTime default=now()
