@@ -48,17 +48,17 @@ User json
 Question json
     title Text
     content Text
-    user_id Int
-    created_at UTCTime default=now()
-    updated_at UTCTime default=now()
+    userId Int
+    createdAt UTCTime default=now()
+    updatedAt UTCTime default=now()
     deriving Eq Show
 
 Answer json 
     questionId QuestionId 
     content Text 
-    user_id Int 
-    created_at UTCTime default=now()
-    updated_at UTCTime default=now()
+    authorId Int 
+    createdAt UTCTime default=now()
+    updatedAt UTCTime default=now()
     deriving Eq Show
 
 |]

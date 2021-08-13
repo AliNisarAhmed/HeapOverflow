@@ -6,8 +6,11 @@ import Data.Text (Text)
 import Data.Time (UTCTime)
 import Database.Esqueleto.Experimental
 import Database.Persist (Entity (..))
+import qualified Database.Persist as P
 import Server.Database.Model
 import Server.Database.Setup
+
+-- QUETIONS
 
 getAllQuestions :: DbQuery [Entity Question]
 getAllQuestions =
@@ -22,6 +25,9 @@ getQuestionById = get
 
 -- ANSWERS
 
+getAnswerById :: Key Answer -> DbQuery (Maybe Answer)
+getAnswerById = get
+
 getAnswersByQuestionId :: Key Question -> DbQuery [Entity Answer]
 getAnswersByQuestionId questionId =
   select $ do
@@ -32,3 +38,8 @@ getAnswersByQuestionId questionId =
 createAnswer :: Key Question -> Text -> Int -> UTCTime -> DbQuery (Entity Answer)
 createAnswer key articleContent answererId now =
   insertEntity (Answer key articleContent answererId now now)
+
+updateAnswer :: Key Answer -> Text -> UTCTime -> DbQuery (Entity Answer)
+updateAnswer answerId updatedContent updatedAt = do
+  a <- updateGet answerId [AnswerContent P.=. updatedContent, AnswerUpdatedAt P.=. updatedAt]
+  pure $ Entity answerId a
