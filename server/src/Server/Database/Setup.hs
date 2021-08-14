@@ -1,38 +1,41 @@
-
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 
 module Server.Database.Setup
-  ( connectDb
-  , runDb
-  , migrateDb
-  , DbQuery
+  ( connectDb,
+    runDb,
+    migrateDb,
+    DbQuery,
   )
 where
 
-import           Database.Persist
-import           Database.Persist.Sql           ( SqlPersistT
-                                                , runMigration
-                                                , runSqlPool
-                                                , ConnectionPool
-                                                )
-
-import           Database.Persist.Postgresql    ( ConnectionString
-                                                , createPostgresqlPool
-                                                , SqlBackend
-                                                )
-import           Control.Monad.Reader           ( ReaderT
-                                                , MonadReader
-                                                , asks
-                                                )
-import           Control.Monad.IO.Class         ( MonadIO
-                                                , liftIO
-                                                )
-import           Control.Monad.Logger           ( runStderrLoggingT )
-
-import           Server.Config
-import           Server.Database.Model
+import Control.Exception (Exception)
+import Control.Monad.Catch (MonadCatch, try)
+import Control.Monad.IO.Class
+  ( MonadIO,
+    liftIO,
+  )
+import Control.Monad.Logger (runStderrLoggingT)
+import Control.Monad.Reader
+  ( MonadReader,
+    ReaderT,
+    asks,
+  )
+import Database.Persist
+import Database.Persist.Postgresql
+  ( ConnectionString,
+    SqlBackend,
+    createPostgresqlPool,
+  )
+import Database.Persist.Sql
+  ( ConnectionPool,
+    SqlPersistT,
+    runMigration,
+    runSqlPool,
+  )
+import Server.Config
+import Server.Database.Model
 
 connectDb :: ConnectionString -> IO ConnectionPool
 connectDb connectionString =
