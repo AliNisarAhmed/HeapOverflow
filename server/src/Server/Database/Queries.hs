@@ -1,12 +1,15 @@
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 
 module Server.Database.Queries where
 
+import Control.Monad.Except (void)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Database.Esqueleto.Experimental
 import Database.Persist (Entity (..))
 import qualified Database.Persist as P
+import Server.API.Requests (SignupForm (..))
 import Server.Database.Model
 import Server.Database.Setup
 
@@ -43,3 +46,9 @@ updateAnswer :: Key Answer -> Text -> UTCTime -> DbQuery (Entity Answer)
 updateAnswer answerId updatedContent updatedAt = do
   a <- updateGet answerId [AnswerContent P.=. updatedContent, AnswerUpdatedAt P.=. updatedAt]
   pure $ Entity answerId a
+
+-- USER
+
+saveUser :: SignupForm -> DbQuery ()
+saveUser SignupForm {..} =
+  void $ insert $ User firstname surname username email password

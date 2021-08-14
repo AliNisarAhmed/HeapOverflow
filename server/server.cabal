@@ -27,6 +27,7 @@ library
       Lib
       Server
       Server.API.AnswerAPI
+      Server.API.AuthAPI
       Server.API.QuestionAPI
       Server.API.Requests
       Server.Config

@@ -3,10 +3,10 @@
 
 module Server.API.Requests where
 
+import Control.Monad.Except (MonadError)
 import Data.Aeson
 import Data.Text (Text)
 import GHC.Generics
-import Control.Monad.Except (MonadError)
 import Servant (throwError)
 import Server.Database.Model
 
@@ -23,8 +23,19 @@ data CreateQuestionRequest = CreateQuestionRequest
 data CreateAnswerRequest = CreateAnswerRequest
   { answerContent :: Text,
     authorId :: Key User
-  } deriving (Eq, Show, ToJSON, FromJSON, Generic)
+  }
+  deriving (Eq, Show, ToJSON, FromJSON, Generic)
 
 newtype UpdateAnswerRequest = UpdateAnswerRequest
-  { updatedContent :: Text }
+  {updatedContent :: Text}
+  deriving (Eq, Show, ToJSON, FromJSON, Generic)
+
+data SignupForm = SignupForm
+  { username :: Text,
+    firstname :: Text,
+    surname :: Text,
+    email :: Text,
+    password :: Text,
+    repeatPassword :: Text
+  }
   deriving (Eq, Show, ToJSON, FromJSON, Generic)
