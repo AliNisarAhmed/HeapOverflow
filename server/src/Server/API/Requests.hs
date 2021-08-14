@@ -8,6 +8,7 @@ import Data.Text (Text)
 import GHC.Generics
 import Control.Monad.Except (MonadError)
 import Servant (throwError)
+import Server.Database.Model
 
 (!??) :: MonadError e m => m (Maybe a) -> e -> m a
 act !?? err = act >>= maybe (throwError err) return
@@ -15,13 +16,13 @@ act !?? err = act >>= maybe (throwError err) return
 data CreateQuestionRequest = CreateQuestionRequest
   { title :: Text,
     content :: Text,
-    userId :: Int
+    userId :: Key User
   }
   deriving (Eq, Show, ToJSON, FromJSON, Generic)
 
 data CreateAnswerRequest = CreateAnswerRequest
   { answerContent :: Text,
-    answererId :: Int
+    authorId :: Key User
   } deriving (Eq, Show, ToJSON, FromJSON, Generic)
 
 newtype UpdateAnswerRequest = UpdateAnswerRequest

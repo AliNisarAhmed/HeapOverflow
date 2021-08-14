@@ -35,7 +35,7 @@ getAnswersByQuestionId questionId =
     where_ (answers ^. AnswerQuestionId ==. val questionId)
     pure answers
 
-createAnswer :: Key Question -> Text -> Int -> UTCTime -> DbQuery (Entity Answer)
+createAnswer :: Key Question -> Text -> Key User -> UTCTime -> DbQuery (Entity Answer)
 createAnswer key articleContent answererId now =
   insertEntity (Answer key articleContent answererId now now)
 

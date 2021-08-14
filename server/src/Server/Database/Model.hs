@@ -48,7 +48,7 @@ User json
 Question json
     title Text
     content Text
-    userId Int
+    userId UserId
     createdAt UTCTime default=now()
     updatedAt UTCTime default=now()
     deriving Eq Show
@@ -56,7 +56,7 @@ Question json
 Answer json 
     questionId QuestionId 
     content Text 
-    authorId Int 
+    authorId UserId 
     createdAt UTCTime default=now()
     updatedAt UTCTime default=now()
     deriving Eq Show

@@ -41,7 +41,7 @@ postAnswer key CreateAnswerRequest {..} = do
   now <- liftIO getCurrentTime
   case question of
     Nothing -> throwError $ err400 {errBody = "Question not found"}
-    Just q -> runDb $ createAnswer key answerContent answererId now
+    Just q -> runDb $ createAnswer key answerContent authorId now
 
 patchAnswer :: Key Question -> Key Answer -> UpdateAnswerRequest -> App (Entity Answer)
 patchAnswer questionId answerId UpdateAnswerRequest {..} = do

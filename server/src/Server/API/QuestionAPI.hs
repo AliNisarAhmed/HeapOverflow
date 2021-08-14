@@ -32,6 +32,7 @@ getQuestions :: App [Entity Question]
 getQuestions = runDb getAllQuestions
 
 postQuestion :: CreateQuestionRequest -> App (Entity Question)
-postQuestion CreateQuestionRequest {title = t, content = c, userId = u} = do
+postQuestion CreateQuestionRequest {..} = do
   now <- liftIO getCurrentTime
-  runDb $ createQuestion (Question t c u now now)
+  runDb $ createQuestion (Question title content userId now now)
+
