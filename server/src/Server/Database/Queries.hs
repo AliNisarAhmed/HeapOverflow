@@ -9,6 +9,7 @@ import Data.Time (UTCTime)
 import Database.Esqueleto.Experimental
 import Database.Persist (Entity (..))
 import qualified Database.Persist as P
+import RIO hiding ((^.))
 import Server.API.Requests (SignupForm (..))
 import Server.Database.Model
 import Server.Database.Setup
@@ -25,6 +26,11 @@ createQuestion = insertEntity
 
 getQuestionById :: Key Question -> DbQuery (Maybe Question)
 getQuestionById = get
+
+updateQuestion :: Key Question -> Text -> UTCTime -> DbQuery (Entity Question)
+updateQuestion questionId updatedContent updatedAt = do
+  q <- updateGet questionId [QuestionContent P.=. updatedContent, QuestionUpdatedAt P.=. updatedAt]
+  pure $ Entity questionId q
 
 -- ANSWERS
 

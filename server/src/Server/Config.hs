@@ -16,6 +16,7 @@ import Database.Persist.Postgresql
     ConnectionString,
     createPostgresqlPool,
   )
+import RIO hiding (Handler)
 import Servant.Server
   ( Handler,
     ServerError,

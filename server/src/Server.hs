@@ -7,6 +7,7 @@ module Server
 where
 
 import Data.Aeson
+import RIO
 import Servant
 import Server.API.AnswerAPI (AnswerAPI, answerServer)
 import Server.API.AuthAPI (AuthAPI, authServer)

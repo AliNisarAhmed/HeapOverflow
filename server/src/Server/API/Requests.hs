@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 
 module Server.API.Requests where
 
@@ -7,6 +8,7 @@ import Control.Monad.Except (MonadError)
 import Data.Aeson
 import Data.Text (Text)
 import GHC.Generics
+import RIO
 import Servant (throwError)
 import Server.Database.Model
 
@@ -17,6 +19,11 @@ data CreateQuestionRequest = CreateQuestionRequest
   { title :: Text,
     content :: Text,
     userId :: Key User
+  }
+  deriving (Eq, Show, ToJSON, FromJSON, Generic)
+
+newtype UpdateQuestionRequest = UpdateQuestionRequest
+  { updatedContent :: Text
   }
   deriving (Eq, Show, ToJSON, FromJSON, Generic)
 

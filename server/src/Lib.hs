@@ -18,6 +18,7 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Network.Wai.Middleware.Cors
 import Network.Wai.Middleware.Servant.Options
+import RIO hiding (Handler)
 import Servant
 import Server
   ( API,

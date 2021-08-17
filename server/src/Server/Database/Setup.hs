@@ -34,6 +34,7 @@ import Database.Persist.Sql
     runMigration,
     runSqlPool,
   )
+import RIO
 import Server.Config
 import Server.Database.Model
 

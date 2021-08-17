@@ -7,9 +7,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -32,6 +30,7 @@ import Database.Persist.TH
     sqlSettings,
   )
 import GHC.Generics (Generic)
+import RIO
 
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]

@@ -1,11 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main where
 
 import Lib (app)
 import Network.Wai.Handler.Warp
+import RIO
 import Server.Config (Config (..))
 import Server.Database.Setup (connectDb, migrateDb)
+import Prelude (putStrLn)
 
 main :: IO ()
 main = do
