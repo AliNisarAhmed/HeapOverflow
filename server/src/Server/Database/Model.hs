@@ -31,6 +31,7 @@ import Database.Persist.TH
   )
 import GHC.Generics (Generic)
 import RIO
+import Server.Core.Types (Salt (..))
 
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -39,12 +40,13 @@ share
 User json 
     firstname Text 
     surname Text 
-    UserFullName firstname surname
     username Text 
-    Username username
     email Text 
-    UniqueEmail email 
     pwd Text
+    salt Text
+    UniqueEmail email 
+    UserFullName firstname surname
+    UniqueUsername username
     deriving Eq Show 
 
 Question json

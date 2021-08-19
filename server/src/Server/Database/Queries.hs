@@ -11,6 +11,8 @@ import Database.Persist (Entity (..))
 import qualified Database.Persist as P
 import RIO hiding ((^.))
 import Server.API.Requests (SignupForm (..))
+import Server.Core.Password (hashPasswordWithSalt)
+import Server.Core.Types
 import Server.Database.Model
 import Server.Database.Setup
 
@@ -55,6 +57,24 @@ updateAnswer answerId updatedContent updatedAt = do
 
 -- USER
 
-saveUser :: SignupForm -> DbQuery ()
-saveUser SignupForm {..} =
-  void $ insert $ User firstname surname username email password
+saveUser :: SignupForm -> Salt -> DbQuery ()
+saveUser SignupForm {..} (Salt s) =
+  void $ insert $ User firstname surname username email password s
+
+getUserByUsername :: Text -> DbQuery (Maybe (Entity User))
+getUserByUsername = getBy . UniqueUsername
+
+getUserByUsernameAndPassword :: Text -> Text -> DbQuery (Maybe (Entity User))
+getUserByUsernameAndPassword un pw = do
+  mu <- getUserByUsername un
+  case mu of
+    Nothing -> pure Nothing
+    Just u@(Entity _ (User fn _ sn em hashedPwd salt)) ->
+      if verifyPassword (HashedPassword hashedPwd) (Password pw) (Salt salt)
+        then pure $ Just u
+        else pure Nothing
+  where
+    verifyPassword :: HashedPassword -> Password -> Salt -> Bool
+    verifyPassword hashedPwd pwd salt =
+      let HashedPassword h = hashPasswordWithSalt pwd salt
+       in h == getHashedPassword hashedPwd

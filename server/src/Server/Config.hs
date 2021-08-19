@@ -11,6 +11,7 @@ import Control.Monad.Reader
   ( MonadReader,
     ReaderT,
   )
+import Crypto.JOSE.JWK (JWK)
 import Database.Persist.Postgresql
   ( ConnectionPool,
     ConnectionString,
@@ -35,5 +36,6 @@ newtype AppT m a = AppT {runApp :: ReaderT Config Handler a}
 type App = AppT (IO ())
 
 newtype Config = Config
-  {configPool :: ConnectionPool}
+  { configPool :: ConnectionPool
+  }
   deriving (Show)

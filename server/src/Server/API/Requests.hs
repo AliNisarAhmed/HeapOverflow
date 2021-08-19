@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DuplicateRecordFields #-}
 
 module Server.API.Requests where
 
@@ -44,5 +43,11 @@ data SignupForm = SignupForm
     email :: Text,
     password :: Text,
     repeatPassword :: Text
+  }
+  deriving (Eq, Show, ToJSON, FromJSON, Generic)
+
+data LoginForm = LoginForm
+  { username :: Text,
+    password :: Text
   }
   deriving (Eq, Show, ToJSON, FromJSON, Generic)
