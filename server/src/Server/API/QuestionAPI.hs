@@ -47,3 +47,4 @@ modifyQuestion questionId UpdateQuestionRequest {..} = do
   runDb (getQuestionById questionId) !?? err400 {errBody = "Question not found"}
   now <- liftIO getCurrentTime
   runDb $ updateQuestion questionId updatedContent now
+

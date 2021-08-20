@@ -33,7 +33,7 @@ import Server.Database.Queries (getUserByUsernameAndPassword, saveUser)
 import Server.Database.Setup (runDb)
 
 type AuthAPI =
-  "api" :> "auth" :> "signup" :> ReqBody '[JSON] SignupForm :> Post '[JSON] ()
+  "api" :> "auth" :> "signup" :> ReqBody '[JSON] SignupForm :> PostNoContent
     :<|> "api" :> "auth" :> "login"
       :> ReqBody '[JSON] LoginForm
       :> Post
@@ -43,12 +43,13 @@ type AuthAPI =
 authServer :: CookieSettings -> JWTSettings -> ServerT AuthAPI App
 authServer cs js = signupRequest :<|> loginRequest cs js
 
-signupRequest :: SignupForm -> App ()
+signupRequest :: SignupForm -> App NoContent
 signupRequest s@SignupForm {..} =
   if password == repeatPassword
     then do
       (HashedPassword hp, salt) <- liftIO $ hashPassword (Password password)
       runDb $ saveUser (s {password = hp}) salt
+      pure NoContent
     else throwError err400 {errBody = "Passwords do not match"}
 
 loginRequest ::

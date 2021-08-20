@@ -2,7 +2,8 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Server
-  ( appMain
+  ( appMain,
+    api,
   )
 where
 
@@ -62,7 +63,6 @@ app ctx cs jwts cfg =
           corsRequireOrigin = False,
           corsIgnoreFailures = False
         }
-
 
 convertApp :: Config -> App a -> Handler a
 convertApp cfg appt = runReaderT (runApp appt) cfg
