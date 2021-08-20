@@ -1,7 +1,7 @@
 module Main where
 
 import RIO
-import Lib (appMain)
+import Server (appMain)
 
 main :: IO ()
 main = appMain

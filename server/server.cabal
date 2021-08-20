@@ -24,7 +24,6 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
       Server
       Server.API.AnswerAPI
       Server.API.AuthAPI
