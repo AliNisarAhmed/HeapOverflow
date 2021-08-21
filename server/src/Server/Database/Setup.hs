@@ -7,6 +7,7 @@ module Server.Database.Setup
     runDb,
     migrateDb,
     DbQuery,
+    getDbConnString
   )
 where
 
@@ -35,12 +36,16 @@ import Database.Persist.Sql
     runSqlPool,
   )
 import RIO
+import RIO.ByteString (ByteString)
 import Server.Config
 import Server.Database.Model
+import System.Environment (getEnv, lookupEnv)
+import Text.Read (read)
+import Server.Core.Utils (fromEnv)
 
-connectDb :: ConnectionString -> IO ConnectionPool
-connectDb connectionString =
-  runStderrLoggingT $ createPostgresqlPool connectionString 1
+connectDb :: Int -> ConnectionString -> IO ConnectionPool
+connectDb numPools connectionString =
+  runStderrLoggingT $ createPostgresqlPool connectionString numPools
 
 runDb :: (MonadReader Config m, MonadIO m) => SqlPersistT IO b -> m b
 runDb query = do
@@ -48,6 +53,57 @@ runDb query = do
   liftIO $ runSqlPool query pool
 
 migrateDb :: ConnectionPool -> IO ()
-migrateDb pool = runSqlPool (runMigration migrateAll) pool
+migrateDb = runSqlPool (runMigration migrateAll)
 
 type DbQuery a = ReaderT SqlBackend IO a
+
+data DbConnection = DbConnection
+  { dbHost :: ByteString,
+    dbName :: ByteString,
+    dbUser :: ByteString,
+    dbPassword :: ByteString,
+    dbPort :: ByteString
+  }
+
+devDbConnection :: DbConnection
+devDbConnection =
+  DbConnection
+    { dbHost = "localhost",
+      dbName = "oopsoverflow",
+      dbUser = "postgres",
+      dbPassword = "abc123",
+      dbPort = "5432"
+    }
+
+
+getDbConnString :: IO ByteString
+getDbConnString = do
+  buildConnectionString <$> readDbConnection
+
+readDbConnection :: IO DbConnection
+readDbConnection = do
+  h <- fromEnv devDbHost "DbHost"
+  n <- fromEnv devDbName "DbName"
+  u <- fromEnv devDbUser "DbUser"
+  pw <- fromEnv devDbPassw "DbPassword"
+  p <- fromEnv devDbPort "DbPort"
+  pure $ DbConnection h n u pw p
+  where
+    devDbHost = dbHost devDbConnection
+    devDbName = dbName devDbConnection
+    devDbUser = dbUser devDbConnection
+    devDbPassw = dbPassword devDbConnection
+    devDbPort = dbPort devDbConnection
+
+buildConnectionString :: DbConnection -> ByteString
+buildConnectionString DbConnection {..} =
+  "host=" <> dbHost
+    <> " dbname="
+    <> dbName
+    <> " user="
+    <> dbUser
+    <> " password="
+    <> dbPassword
+    <> " port="
+    <> dbPort
+

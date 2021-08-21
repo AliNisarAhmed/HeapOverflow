@@ -1,4 +1,6 @@
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
@@ -12,6 +14,8 @@ import Control.Monad.Reader
     ReaderT,
   )
 import Crypto.JOSE.JWK (JWK)
+import Data.Aeson (ToJSON)
+import Data.Aeson.Types (FromJSON)
 import Database.Persist.Postgresql
   ( ConnectionPool,
     ConnectionString,
@@ -22,6 +26,7 @@ import Servant.Server
   ( Handler,
     ServerError,
   )
+import Server.Core.Utils (fromEnv)
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
@@ -35,7 +40,22 @@ newtype AppT m a = AppT {runApp :: ReaderT Config Handler a}
 
 type App = AppT (IO ())
 
+data Environment
+  = Prod
+  | Dev
+  deriving (Eq, Show, Read, ToJSON, FromJSON, Generic)
+
 newtype Config = Config
   { configPool :: ConnectionPool
   }
   deriving (Show)
+
+getConfig :: IO Config
+getConfig = undefined
+
+readAppEnv :: IO Environment
+readAppEnv = fromEnv Dev "APPLICATION_ENVIRONMENT"
+
+getNumberOfConn :: Environment -> Int
+getNumberOfConn Dev = 1
+getNumberOfConn Prod = 8

@@ -26,7 +26,7 @@ import Server.API.AnswerAPI (AnswerAPI, answerServer)
 import Server.API.AuthAPI (AuthAPI, authServer)
 import Server.API.QuestionAPI (QuestionAPI, questionServer)
 import Server.Config
-import Server.Database.Setup (connectDb, migrateDb, runDb)
+import Server.Database.Setup (connectDb, migrateDb, runDb, getDbConnString )
 
 type API = AuthAPI :<|> QuestionAPI :<|> AnswerAPI
 
@@ -71,8 +71,9 @@ appMain :: IO ()
 appMain = do
   key <- SAS.generateKey
   putStrLn "starting the server"
-  let connectionString = "host=localhost dbname=oopsoverflow user=postgres password=abc123"
-  pool <- connectDb connectionString
+  appEnv <- readAppEnv
+  connStr <- getDbConnString
+  pool <- connectDb (getNumberOfConn appEnv) connStr
   migrateDb pool
   let cfg = Config pool
       port = 5000
