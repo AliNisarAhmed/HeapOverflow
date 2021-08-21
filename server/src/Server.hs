@@ -44,7 +44,7 @@ app ::
   Application
 app ctx cs jwts cfg =
   cors (const $ Just policy) $
-    provideOptions api $
+    -- provideOptions api $
       serveWithContext api ctx $
         hoistServerWithContext
           api
@@ -77,7 +77,7 @@ appMain = do
   let cfg = Config pool
       port = 5000
       jwtCfg = SAS.defaultJWTSettings key
-      cookieCfg = SAS.defaultCookieSettings
+      cookieCfg = SAS.defaultCookieSettings { SAS.cookieXsrfSetting = Nothing }
       ctx = cookieCfg :. jwtCfg :. EmptyContext
   putStrLn $ "Server started on port " <> T.pack (show port)
   run port $ app ctx cookieCfg jwtCfg cfg
