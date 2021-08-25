@@ -7,7 +7,7 @@ module Server.Database.Setup
     runDb,
     migrateDb,
     DbQuery,
-    getDbConnString
+    getDbConnString,
   )
 where
 
@@ -38,10 +38,10 @@ import Database.Persist.Sql
 import RIO
 import RIO.ByteString (ByteString)
 import Server.Config
+import Server.Core.Utils (fromEnv)
 import Server.Database.Model
 import System.Environment (getEnv, lookupEnv)
 import Text.Read (read)
-import Server.Core.Utils (fromEnv)
 
 connectDb :: Int -> ConnectionString -> IO ConnectionPool
 connectDb numPools connectionString =
@@ -75,25 +75,11 @@ devDbConnection =
       dbPort = "5432"
     }
 
-
 getDbConnString :: IO ByteString
-getDbConnString = do
-  buildConnectionString <$> readDbConnection
-
-readDbConnection :: IO DbConnection
-readDbConnection = do
-  h <- fromEnv devDbHost "DbHost"
-  n <- fromEnv devDbName "DbName"
-  u <- fromEnv devDbUser "DbUser"
-  pw <- fromEnv devDbPassw "DbPassword"
-  p <- fromEnv devDbPort "DbPort"
-  pure $ DbConnection h n u pw p
+getDbConnString =
+  fromEnv localConn "DATABASE_URL"
   where
-    devDbHost = dbHost devDbConnection
-    devDbName = dbName devDbConnection
-    devDbUser = dbUser devDbConnection
-    devDbPassw = dbPassword devDbConnection
-    devDbPort = dbPort devDbConnection
+    localConn = buildConnectionString devDbConnection
 
 buildConnectionString :: DbConnection -> ByteString
 buildConnectionString DbConnection {..} =
@@ -106,4 +92,3 @@ buildConnectionString DbConnection {..} =
     <> dbPassword
     <> " port="
     <> dbPort
-
