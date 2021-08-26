@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -22,6 +21,7 @@ import Database.Persist.Postgresql
     createPostgresqlPool,
   )
 import RIO hiding (Handler)
+import Servant.Auth.Server (CookieSettings (..), IsSecure (..), defaultCookieSettings)
 import Servant.Server
   ( Handler,
     ServerError,
@@ -43,7 +43,11 @@ type App = AppT (IO ())
 data Environment
   = Prod
   | Dev
-  deriving (Eq, Show, Read, ToJSON, FromJSON, Generic)
+  deriving (Eq, Show, Read, Generic)
+
+instance ToJSON Environment
+
+instance FromJSON Environment
 
 newtype Config = Config
   { configPool :: ConnectionPool
@@ -59,3 +63,9 @@ readAppEnv = fromEnv Dev "APPLICATION_ENVIRONMENT"
 getNumberOfConn :: Environment -> Int
 getNumberOfConn Dev = 1
 getNumberOfConn Prod = 8
+
+defineCookieConfig :: Environment -> CookieSettings
+defineCookieConfig env =
+  case env of
+    Dev -> defaultCookieSettings {cookieIsSecure = NotSecure, cookieXsrfSetting = Nothing}
+    Prod -> defaultCookieSettings

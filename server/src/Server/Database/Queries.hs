@@ -34,6 +34,9 @@ updateQuestion questionId updatedContent updatedAt = do
   q <- updateGet questionId [QuestionContent P.=. updatedContent, QuestionUpdatedAt P.=. updatedAt]
   pure $ Entity questionId q
 
+deleteQuestionById :: Key Question -> DbQuery ()
+deleteQuestionById = P.delete
+
 -- ANSWERS
 
 getAnswerById :: Key Answer -> DbQuery (Maybe Answer)

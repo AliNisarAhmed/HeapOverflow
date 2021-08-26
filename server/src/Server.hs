@@ -78,7 +78,9 @@ appMain = do
   let cfg = Config pool
       port = 5000
       jwtCfg = SAS.defaultJWTSettings key
-      cookieCfg = SAS.defaultCookieSettings { SAS.cookieXsrfSetting = Nothing }
+      cookieCfg = defineCookieConfig appEnv
       ctx = cookieCfg :. jwtCfg :. EmptyContext
   putStrLn $ "Server started on port " <> T.pack (show port)
   run port $ app ctx cookieCfg jwtCfg cfg
+
+

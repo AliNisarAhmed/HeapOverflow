@@ -13,11 +13,11 @@ import Database.Persist
 import RIO
 import Servant
 import qualified Servant.Auth.Server as SAS
-import Server.API.AuthAPI (AuthenticatedUser (AuthenticatedUser))
+import Server.API.AuthAPI (AuthenticatedUser (..))
 import Server.API.Requests
 import Server.Config (App (..))
 import Server.Database.Model
-import Server.Database.Queries (createQuestion, getAllQuestions, getQuestionById, updateQuestion)
+import Server.Database.Queries (createQuestion, deleteQuestionById, getAllQuestions, getQuestionById, updateQuestion)
 import Server.Database.Setup (DbQuery, runDb)
 import System.IO (print)
 
@@ -30,6 +30,9 @@ type QuestionAPI =
            :<|> Capture "questionId" (Key Question)
              :> ReqBody '[JSON] UpdateQuestionRequest
              :> Patch '[JSON] (Entity Question)
+           :<|> Capture "questionId" (Key Question)
+             :> SAS.Auth '[SAS.Cookie, SAS.JWT] AuthenticatedUser
+             :> Delete '[JSON] ()
        )
 
 questionServer :: ServerT QuestionAPI App
@@ -37,6 +40,7 @@ questionServer =
   getQuestions
     :<|> postQuestion
     :<|> modifyQuestion
+    :<|> deleteQuestion
 
 getQuestions :: App [Entity Question]
 getQuestions = runDb getAllQuestions
@@ -54,3 +58,11 @@ modifyQuestion questionId UpdateQuestionRequest {..} = do
   runDb (getQuestionById questionId) !?? err400 {errBody = "Question not found"}
   now <- liftIO getCurrentTime
   runDb $ updateQuestion questionId updatedContent now
+
+deleteQuestion :: Key Question -> SAS.AuthResult AuthenticatedUser -> App ()
+deleteQuestion questionId (SAS.Authenticated AuthenticatedUser {..}) = do
+  question <- runDb (getQuestionById questionId) !?? err400 {errBody = "Question not found"}
+  when (questionUserId question /= auId) (throwError err403)
+  runDb (deleteQuestionById questionId)
+  pure ()
+deleteQuestion _ _ = throwError err403
