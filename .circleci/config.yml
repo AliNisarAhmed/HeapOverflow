@@ -6,7 +6,7 @@ jobs:
       - image: fpco/stack-build
     steps:
       - checkout
-          path: /server
+        path: ./server
       - restore_cache: 
           name: Restore Cache Dependencies
           key: myapp-{{ checksum "package.yaml" }}-{{ checksum "server.cabal" }}
