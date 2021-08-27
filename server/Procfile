@@ -1,1 +1,1 @@
-web: cd server && stack exec server
+web: server

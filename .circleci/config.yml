@@ -1,0 +1,25 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/server
+    docker:
+      - image: fpco/stack-build
+    steps:
+      - checkout
+          path: /server
+      - restore_cache: 
+          name: Restore Cache Dependencies
+          key: myapp-{{ checksum "package.yaml" }}-{{ checksum "server.cabal" }}
+      - run:
+          name: Resolve/Update Dependencies
+          command: stack setup
+      - run:
+          name: Build
+          command: stack build
+      - save_cache: 
+          name: Cache Dependencies
+          key: myapp-{{ checksum "package.yaml" }}-{{ checksum "server.cabal" }}
+          paths: 
+            - "/root/.stack"
+            - ".stack-work"
+
