@@ -1,0 +1,21 @@
+name: Server 
+
+on: [push]
+
+jobs: 
+  build: 
+    runs-on: ubuntu-latest 
+    steps: 
+
+      - name: Checkout repo 
+        uses: actions/checkout@v2 
+
+      - name: Cache Dependencies 
+        uses: actions/cache@v2 
+        with: 
+          path: ~/.stack
+          key: my-app-${{ hashFiles('server/stack.yaml') }}-${{ hashFiles('server/package.yaml') }}
+
+      - name: Build Server 
+        run: cd server && stack build 
+
