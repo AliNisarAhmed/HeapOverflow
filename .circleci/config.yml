@@ -9,7 +9,7 @@ jobs:
           path: ./server
       - restore_cache: 
           name: Restore Cache Dependencies
-          key: myapp-{{ checksum "package.yaml" }}-{{ checksum "server.cabal" }}
+          key: myapp-{{ checksum "server/package.yaml" }}-{{ checksum "server/server.cabal" }}
       - run:
           name: Resolve/Update Dependencies
           command: stack setup
@@ -18,7 +18,7 @@ jobs:
           command: stack build
       - save_cache: 
           name: Cache Dependencies
-          key: myapp-{{ checksum "package.yaml" }}-{{ checksum "server.cabal" }}
+          key: myapp-{{ checksum "server/package.yaml" }}-{{ checksum "server/server.cabal" }}
           paths: 
             - "/root/.stack"
             - ".stack-work"
