@@ -14,6 +14,8 @@ import Data.Aeson.TH
 import qualified Data.Text as T
 import Data.Text.IO (putStrLn)
 import Database.Persist
+import qualified Database.Persist.Migration as DPM (defaultSettings)
+import Database.Persist.Migration.Postgres (runMigration)
 import GHC.Generics
 import Network.Wai
 import Network.Wai.Handler.Warp
@@ -26,7 +28,8 @@ import Server.API.AnswerAPI (AnswerAPI, answerServer)
 import Server.API.AuthAPI (AuthAPI, authServer)
 import Server.API.QuestionAPI (QuestionAPI, questionServer)
 import Server.Config
-import Server.Database.Setup (connectDb, migrateDb, runDb, getDbConnString )
+import Server.Database.Migrations (migration)
+import Server.Database.Setup (connectDb, getDbConnString, migrateDb, runDb)
 
 type API = AuthAPI :<|> QuestionAPI :<|> AnswerAPI
 
@@ -45,12 +48,12 @@ app ::
 app ctx cs jwts cfg =
   cors (const $ Just policy) $
     -- provideOptions api $
-      serveWithContext api ctx $
-        hoistServerWithContext
-          api
-          (Proxy :: Proxy '[SAS.CookieSettings, SAS.JWTSettings])
-          (convertApp cfg)
-          (server cs jwts)
+    serveWithContext api ctx $
+      hoistServerWithContext
+        api
+        (Proxy :: Proxy '[SAS.CookieSettings, SAS.JWTSettings])
+        (convertApp cfg)
+        (server cs jwts)
   where
     policy =
       CorsResourcePolicy
@@ -75,6 +78,7 @@ appMain = do
   connStr <- getDbConnString
   pool <- connectDb (getNumberOfConn appEnv) connStr
   migrateDb pool
+  -- runMigration DPM.defaultSettings migration
   let cfg = Config pool
       port = 5000
       jwtCfg = SAS.defaultJWTSettings key
@@ -82,5 +86,3 @@ appMain = do
       ctx = cookieCfg :. jwtCfg :. EmptyContext
   putStrLn $ "Server started on port " <> T.pack (show port)
   run port $ app ctx cookieCfg jwtCfg cfg
-
-

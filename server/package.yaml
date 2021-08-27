@@ -45,6 +45,7 @@ dependencies:
 - servant-auth
 - servant-auth-server
 - servant-docs
+- persistent-migration
 
 default-extensions: 
 - NoImplicitPrelude

@@ -34,6 +34,7 @@ library
       Server.Core.Password
       Server.Core.Types
       Server.Core.Utils
+      Server.Database.Migrations
       Server.Database.Model
       Server.Database.Queries
       Server.Database.Setup
@@ -57,6 +58,7 @@ library
     , monad-logger
     , mtl
     , persistent
+    , persistent-migration
     , persistent-postgresql
     , persistent-template
     , rio
@@ -98,6 +100,7 @@ executable server
     , monad-logger
     , mtl
     , persistent
+    , persistent-migration
     , persistent-postgresql
     , persistent-template
     , rio
@@ -144,6 +147,7 @@ test-suite server-test
     , monad-logger
     , mtl
     , persistent
+    , persistent-migration
     , persistent-postgresql
     , persistent-template
     , rio

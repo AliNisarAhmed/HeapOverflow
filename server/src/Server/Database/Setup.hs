@@ -32,7 +32,6 @@ import Database.Persist.Postgresql
 import Database.Persist.Sql
   ( ConnectionPool,
     SqlPersistT,
-    runMigration,
     runSqlPool,
   )
 import RIO
@@ -42,6 +41,9 @@ import Server.Core.Utils (fromEnv)
 import Server.Database.Model
 import System.Environment (getEnv, lookupEnv)
 import Text.Read (read)
+import Database.Persist.Migration (defaultSettings)
+import Server.Database.Migrations (migration)
+import Database.Persist.Migration.Postgres (runMigration)
 
 connectDb :: Int -> ConnectionString -> IO ConnectionPool
 connectDb numPools connectionString =
@@ -53,7 +55,7 @@ runDb query = do
   liftIO $ runSqlPool query pool
 
 migrateDb :: ConnectionPool -> IO ()
-migrateDb = runSqlPool (runMigration migrateAll)
+migrateDb = runSqlPool (runMigration defaultSettings migration)
 
 type DbQuery a = ReaderT SqlBackend IO a
 

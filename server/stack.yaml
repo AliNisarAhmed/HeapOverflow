@@ -42,7 +42,7 @@ packages:
 #
 extra-deps:
   - servant-options-0.1.0.0@sha256:39f50166a68006250e79370372f553ca476f14d06d93fa0c401050253aeba803,914
-
+  - persistent-migration-0.2.1@sha256:29788f554fa4ae624534714d7893b6dc6d7dcf11ed211554ac278b9a8d885582,3433
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

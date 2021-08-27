@@ -11,6 +11,13 @@ packages:
       sha256: 7812baf1b27c62068ba634207fbd7077b886424d666b36739a78c6d4008a1fd4
   original:
     hackage: servant-options-0.1.0.0@sha256:39f50166a68006250e79370372f553ca476f14d06d93fa0c401050253aeba803,914
+- completed:
+    hackage: persistent-migration-0.2.1@sha256:29788f554fa4ae624534714d7893b6dc6d7dcf11ed211554ac278b9a8d885582,3433
+    pantry-tree:
+      size: 1619
+      sha256: 32c153f9b6b452043fe397924b3da5b15466108ac80fe32e3bb07d6117efbaf0
+  original:
+    hackage: persistent-migration-0.2.1@sha256:29788f554fa4ae624534714d7893b6dc6d7dcf11ed211554ac278b9a8d885582,3433
 snapshots:
 - completed:
     size: 585817
