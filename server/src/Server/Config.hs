@@ -3,6 +3,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
+-- Deployment help
+-- https://github.com/futurice/myRetroGenerator/blob/master/.github/workflows/ci.yml
+-- https://github.com/actions/cache/pull/173/files
+-- https://github.com/actions/starter-workflows/blob/main/ci/haskell.yml
+
 module Server.Config where
 
 import Control.Monad.Catch (MonadCatch, MonadThrow)
