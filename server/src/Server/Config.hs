@@ -59,11 +59,11 @@ newtype Config = Config
   }
   deriving (Show)
 
-getConfig :: IO Config
-getConfig = undefined
-
 readAppEnv :: IO Environment
 readAppEnv = fromEnv Dev "APPLICATION_ENVIRONMENT"
+
+getPort :: IO Int 
+getPort = fromEnv 5000 "PORT"
 
 getNumberOfConn :: Environment -> Int
 getNumberOfConn Dev = 1

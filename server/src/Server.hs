@@ -78,9 +78,8 @@ appMain = do
   connStr <- getDbConnString
   pool <- connectDb (getNumberOfConn appEnv) connStr
   migrateDb pool
-  -- runMigration DPM.defaultSettings migration
+  port <- Server.Config.getPort
   let cfg = Config pool
-      port = 5000
       jwtCfg = SAS.defaultJWTSettings key
       cookieCfg = defineCookieConfig appEnv
       ctx = cookieCfg :. jwtCfg :. EmptyContext
