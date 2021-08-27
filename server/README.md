@@ -16,4 +16,7 @@ Run it from project root:
 -- https://github.com/actions/cache/pull/173/files
 -- https://github.com/actions/starter-workflows/blob/main/ci/haskell.yml
 
+Enable subfolder deployment in heroku 
+
+https://stackoverflow.com/questions/39197334/automated-heroku-deploy-from-subfolder
 
