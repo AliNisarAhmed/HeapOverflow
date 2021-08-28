@@ -1,1 +1,1 @@
-web: server
+web: run-app-server

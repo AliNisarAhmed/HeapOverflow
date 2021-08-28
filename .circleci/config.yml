@@ -7,7 +7,7 @@ jobs:
       - checkout
       - restore_cache: 
           name: Restore Cache Dependencies
-          key: myapp-{{ checksum "./server/stack.yaml" }}-{{ checksum "./server/server.cabal" }}
+          key: myapp-{{ checksum "./server/stack.yaml" }}-{{ checksum "./server/package.yaml" }}
       - run:
           name: Resolve/Update Dependencies
           command: cd server && stack setup
@@ -16,7 +16,7 @@ jobs:
           command: cd server && stack build
       - save_cache: 
           name: Cache Dependencies
-          key: myapp-{{ checksum "./server/stack.yaml" }}-{{ checksum "./server/server.cabal" }}
+          key: myapp-{{ checksum "./server/stack.yaml" }}-{{ checksum "./server/package.cabal" }}
           paths: 
             - "/root/.stack"
             - "./server/.stack-work"
