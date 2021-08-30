@@ -58,6 +58,9 @@ updateAnswer answerId updatedContent updatedAt = do
   a <- updateGet answerId [AnswerContent P.=. updatedContent, AnswerUpdatedAt P.=. updatedAt]
   pure $ Entity answerId a
 
+deleteAnswerById :: Key Answer -> DbQuery ()
+deleteAnswerById = P.delete
+
 -- USER
 
 saveUser :: SignupForm -> Salt -> DbQuery ()

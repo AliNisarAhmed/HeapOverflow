@@ -11,10 +11,12 @@ import Database.Persist (Entity (Entity))
 import RIO
 import Servant
 import Servant.API (ReqBody)
+import qualified Servant.Auth.Server as SAS
+import Server.API.AuthAPI (AuthenticatedUser (..))
 import Server.API.Requests (CreateAnswerRequest (..), UpdateAnswerRequest (..), (!??))
 import Server.Config (App)
 import Server.Database.Model
-import Server.Database.Queries (createAnswer, getAnswerById, getAnswersByQuestionId, getQuestionById, updateAnswer)
+import Server.Database.Queries (createAnswer, deleteAnswerById, getAnswerById, getAnswersByQuestionId, getQuestionById, updateAnswer)
 import Server.Database.Setup (runDb)
 
 type AnswerAPI =
@@ -22,6 +24,7 @@ type AnswerAPI =
     :> ( Get '[JSON] [Entity Answer]
            :<|> ReqBody '[JSON] CreateAnswerRequest :> Post '[JSON] (Entity Answer)
            :<|> Capture "answerId" (Key Answer) :> ReqBody '[JSON] UpdateAnswerRequest :> Patch '[JSON] (Entity Answer)
+           :<|> Capture "answerId" (Key Answer) :> SAS.Auth '[SAS.Cookie, SAS.JWT] AuthenticatedUser :> Delete '[JSON] ()
        )
 
 answerServer :: ServerT AnswerAPI App
@@ -29,6 +32,7 @@ answerServer questionId =
   getAnswersForQuestion questionId
     :<|> postAnswer questionId
     :<|> patchAnswer questionId
+    :<|> deleteAnswer questionId
 
 getAnswersForQuestion :: Key Question -> App [Entity Answer]
 getAnswersForQuestion questionId =
@@ -48,3 +52,11 @@ patchAnswer questionId answerId UpdateAnswerRequest {..} = do
   runDb (getAnswerById answerId) !?? err400 {errBody = "Answer not found"}
   now <- liftIO getCurrentTime
   runDb $ updateAnswer answerId updatedContent now
+
+deleteAnswer :: Key Question -> Key Answer -> SAS.AuthResult AuthenticatedUser -> App ()
+deleteAnswer questionId answerId (SAS.Authenticated AuthenticatedUser {..}) = do
+  runDb (getQuestionById questionId) !?? err400 {errBody = "Question not found"}
+  answer <- runDb (getAnswerById answerId) !?? err400 {errBody = "Answer not found"}
+  when (answerAuthorId answer /= auId) (throwError err403)
+  void $ runDb (deleteAnswerById answerId)
+deleteAnswer _ _ _ = throwError err403
