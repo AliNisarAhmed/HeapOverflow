@@ -76,7 +76,7 @@ updateQuestionRequest :: UpdateQuestionRequest
 updateQuestionRequest = UpdateQuestionRequest sampleUpdatedContent
 
 createAnswerRequest :: CreateAnswerRequest
-createAnswerRequest = CreateAnswerRequest sampleAnswerContent sampleUserId
+createAnswerRequest = CreateAnswerRequest sampleAnswerContent 
 
 updateAnswerRequest :: UpdateAnswerRequest
 updateAnswerRequest = UpdateAnswerRequest sampleUpdatedContent

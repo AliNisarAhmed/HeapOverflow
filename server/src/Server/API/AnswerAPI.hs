@@ -22,9 +22,15 @@ import Server.Database.Setup (runDb)
 type AnswerAPI =
   "api" :> "questions" :> Capture "questionId" (Key Question) :> "answers"
     :> ( Get '[JSON] [Entity Answer]
-           :<|> ReqBody '[JSON] CreateAnswerRequest :> Post '[JSON] (Entity Answer)
-           :<|> Capture "answerId" (Key Answer) :> ReqBody '[JSON] UpdateAnswerRequest :> Patch '[JSON] (Entity Answer)
-           :<|> Capture "answerId" (Key Answer) :> SAS.Auth '[SAS.Cookie, SAS.JWT] AuthenticatedUser :> Delete '[JSON] ()
+           :<|> ReqBody '[JSON] CreateAnswerRequest
+             :> SAS.Auth '[SAS.Cookie, SAS.JWT] AuthenticatedUser
+             :> Post '[JSON] (Entity Answer)
+           :<|> Capture "answerId" (Key Answer)
+             :> ReqBody '[JSON] UpdateAnswerRequest
+             :> Patch '[JSON] (Entity Answer)
+           :<|> Capture "answerId" (Key Answer)
+             :> SAS.Auth '[SAS.Cookie, SAS.JWT] AuthenticatedUser
+             :> Delete '[JSON] ()
        )
 
 answerServer :: ServerT AnswerAPI App
@@ -38,13 +44,14 @@ getAnswersForQuestion :: Key Question -> App [Entity Answer]
 getAnswersForQuestion questionId =
   runDb $ getAnswersByQuestionId questionId
 
-postAnswer :: Key Question -> CreateAnswerRequest -> App (Entity Answer)
-postAnswer key CreateAnswerRequest {..} = do
+postAnswer :: Key Question -> CreateAnswerRequest -> SAS.AuthResult AuthenticatedUser -> App (Entity Answer)
+postAnswer key CreateAnswerRequest {..} (SAS.Authenticated AuthenticatedUser {..})= do
   question <- runDb $ getQuestionById key
   now <- liftIO getCurrentTime
   case question of
     Nothing -> throwError $ err400 {errBody = "Question not found"}
-    Just q -> runDb $ createAnswer key answerContent authorId now
+    Just q -> runDb $ createAnswer key answerContent auId now
+postAnswer _ _ _ = throwError err403
 
 patchAnswer :: Key Question -> Key Answer -> UpdateAnswerRequest -> App (Entity Answer)
 patchAnswer questionId answerId UpdateAnswerRequest {..} = do

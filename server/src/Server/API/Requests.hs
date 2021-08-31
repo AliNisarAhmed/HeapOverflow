@@ -26,9 +26,8 @@ newtype UpdateQuestionRequest = UpdateQuestionRequest
   }
   deriving (Eq, Show, ToJSON, FromJSON, Generic)
 
-data CreateAnswerRequest = CreateAnswerRequest
-  { answerContent :: Text,
-    authorId :: Key User
+newtype CreateAnswerRequest = CreateAnswerRequest
+  { answerContent :: Text
   }
   deriving (Eq, Show, ToJSON, FromJSON, Generic)
 
