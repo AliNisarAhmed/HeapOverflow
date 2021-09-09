@@ -16,7 +16,16 @@ import Server.Core.Types
 import Server.Database.Model
 import Server.Database.Setup
 
--- QUETIONS
+-- TAGS 
+
+createTags :: [Text] -> DbQuery [Key Tag]
+createTags tags = insertMany (fmap Tag tags)
+
+
+createQuestionTags :: [Key Tag] -> Key Question -> DbQuery ()
+createQuestionTags tagIds questionId = void $ insertMany (fmap (QuestionTag questionId) tagIds)
+
+-- QUESTIONS
 
 getAllQuestions :: DbQuery [Entity Question]
 getAllQuestions =

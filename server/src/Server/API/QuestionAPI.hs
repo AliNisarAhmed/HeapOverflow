@@ -17,16 +17,17 @@ import Server.API.AuthAPI (AuthenticatedUser (..))
 import Server.API.Requests
 import Server.Config (App (..))
 import Server.Database.Model
-import Server.Database.Queries (createQuestion, deleteQuestionById, getAllQuestions, getQuestionById, updateQuestion)
+import Server.Database.Queries (createQuestion, deleteQuestionById, getAllQuestions, getQuestionById, updateQuestion, createTags, createQuestionTags)
 import Server.Database.Setup (DbQuery, runDb)
 import System.IO (print)
+import Server.API.Responses (QuestionDTO, mkQuestionDTO)
 
 type QuestionAPI =
   "api" :> "questions"
     :> ( Get '[JSON] [Entity Question]
            :<|> SAS.Auth '[SAS.Cookie, SAS.JWT] AuthenticatedUser
              :> ReqBody '[JSON] CreateQuestionRequest
-             :> Post '[JSON] (Entity Question)
+             :> Post '[JSON] QuestionDTO
            :<|> Capture "questionId" (Key Question)
              :> ReqBody '[JSON] UpdateQuestionRequest
              :> Patch '[JSON] (Entity Question)
@@ -45,13 +46,15 @@ questionServer =
 getQuestions :: App [Entity Question]
 getQuestions = runDb getAllQuestions
 
-postQuestion :: SAS.AuthResult AuthenticatedUser -> CreateQuestionRequest -> App (Entity Question)
+postQuestion :: SAS.AuthResult AuthenticatedUser -> CreateQuestionRequest -> App QuestionDTO
 postQuestion (SAS.Authenticated AuthenticatedUser {..}) CreateQuestionRequest {..} = do
   now <- liftIO getCurrentTime
-  runDb $ createQuestion (Question title content userId now now)
-postQuestion x _ = do
-  liftIO $ print x
-  SAS.throwAll err401
+  when (null tags) (throwError err400 {errBody = "At least one tag is required"} )
+  createdQuestion <- runDb $ createQuestion (Question title content auId now now)
+  tagIds <- runDb $ createTags tags
+  runDb $ createQuestionTags tagIds (entityKey createdQuestion)
+  pure $ mkQuestionDTO createdQuestion tags
+postQuestion x _ = SAS.throwAll err401
 
 modifyQuestion :: Key Question -> UpdateQuestionRequest -> App (Entity Question)
 modifyQuestion questionId UpdateQuestionRequest {..} = do

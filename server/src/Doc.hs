@@ -10,7 +10,7 @@ import RIO
 import RIO.ByteString (writeFile)
 import RIO.Text
 import Servant (Capture)
-import Servant.Auth.Server (SetCookie, Cookie, JWT)
+import Servant.Auth.Server (Cookie, JWT, SetCookie)
 import Servant.Docs
 import Server (api)
 import Server.API.AuthAPI (AuthenticatedUser (AuthenticatedUser))
@@ -70,13 +70,13 @@ sampleAnswer :: Answer
 sampleAnswer = Answer questionId sampleAnswerContent sampleUserId createdAt updatedAt
 
 createQuestionRequest :: CreateQuestionRequest
-createQuestionRequest = CreateQuestionRequest qTitle qContent sampleUserId
+createQuestionRequest = CreateQuestionRequest qTitle qContent []
 
 updateQuestionRequest :: UpdateQuestionRequest
 updateQuestionRequest = UpdateQuestionRequest sampleUpdatedContent
 
 createAnswerRequest :: CreateAnswerRequest
-createAnswerRequest = CreateAnswerRequest sampleAnswerContent 
+createAnswerRequest = CreateAnswerRequest sampleAnswerContent
 
 updateAnswerRequest :: UpdateAnswerRequest
 updateAnswerRequest = UpdateAnswerRequest sampleUpdatedContent
@@ -129,8 +129,8 @@ instance ToSample AuthenticatedUser where
 instance ToSample SetCookie where
   toSamples _ = noSamples
 
-instance ToSample Cookie where 
+instance ToSample Cookie where
   toSamples _ = noSamples
 
-instance ToSample JWT where 
+instance ToSample JWT where
   toSamples _ = noSamples

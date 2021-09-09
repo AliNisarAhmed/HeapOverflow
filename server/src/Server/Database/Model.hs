@@ -65,4 +65,12 @@ Answer json
     updatedAt UTCTime default=now()
     deriving Eq Show
 
+Tag json 
+    title Text 
+    UniqueTitle title
+
+QuestionTag json 
+    questionId QuestionId 
+    tagId TagId
+
 |]

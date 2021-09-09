@@ -17,7 +17,7 @@ act !?? err = act >>= maybe (throwError err) return
 data CreateQuestionRequest = CreateQuestionRequest
   { title :: Text,
     content :: Text,
-    userId :: Key User
+    tags :: [Text]
   }
   deriving (Eq, Show, ToJSON, FromJSON, Generic)
 

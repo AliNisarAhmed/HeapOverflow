@@ -8,8 +8,38 @@ import RIO
 
 migration :: Migration
 migration =
-  [ 0 ~> 1 := [createUserTable, createQuestionTable, createAnswerTable]
+  [ 0 ~> 1 := [createUserTable, createQuestionTable, createAnswerTable],
+    1 ~> 2 := [createTagTable, createQuestionTagsTable]
   ]
+
+createTagTable :: Operation
+createTagTable =
+  CreateTable
+    { name = "tag",
+      schema =
+        [ Column "id" SqlInt32 [NotNull, AutoIncrement],
+          Column "title" SqlString [NotNull]
+        ],
+      constraints =
+        [ PrimaryKey ["id"],
+          Unique "unique_question_title" ["title"]
+        ]
+    }
+
+createQuestionTagsTable :: Operation
+createQuestionTagsTable =
+  CreateTable
+    { name = "question_tag",
+      schema =
+        [ Column "id" SqlInt32 [NotNull, AutoIncrement],
+          Column "question_id" SqlInt32 [References ("question", "id")],
+          Column "tag_id" SqlInt32 [References ("tag", "id")]
+        ],
+      constraints =
+        [ PrimaryKey ["id"],
+          Unique "unique_question_tag" ["question_id", "tag_id"]
+        ]
+    }
 
 createUserTable :: Operation
 createUserTable =

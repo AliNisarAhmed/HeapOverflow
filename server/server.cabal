@@ -30,6 +30,7 @@ library
       Server.API.AuthAPI
       Server.API.QuestionAPI
       Server.API.Requests
+      Server.API.Responses
       Server.Config
       Server.Core.Password
       Server.Core.Types
