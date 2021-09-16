@@ -15,16 +15,17 @@ import Servant
 import qualified Servant.Auth.Server as SAS
 import Server.API.AuthAPI (AuthenticatedUser (..))
 import Server.API.Requests
+import Server.API.Responses (QuestionDTO (QuestionDTO), mkQuestionDTO, TagDTO (TagDTO))
 import Server.Config (App (..))
+import Server.Core.Utils (groupQueryResults)
 import Server.Database.Model
-import Server.Database.Queries (createQuestion, deleteQuestionById, getAllQuestions, getQuestionById, updateQuestion, createTags, createQuestionTags)
+import Server.Database.Queries (createQuestion, createQuestionTags, createTags, deleteQuestionById, getAllQuestions, getQuestionById, updateQuestion)
 import Server.Database.Setup (DbQuery, runDb)
 import System.IO (print)
-import Server.API.Responses (QuestionDTO, mkQuestionDTO)
 
 type QuestionAPI =
   "api" :> "questions"
-    :> ( Get '[JSON] [Entity Question]
+    :> ( Get '[JSON] [QuestionDTO]
            :<|> SAS.Auth '[SAS.Cookie, SAS.JWT] AuthenticatedUser
              :> ReqBody '[JSON] CreateQuestionRequest
              :> Post '[JSON] QuestionDTO
@@ -43,16 +44,18 @@ questionServer =
     :<|> modifyQuestion
     :<|> deleteQuestion
 
-getQuestions :: App [Entity Question]
-getQuestions = runDb getAllQuestions
+getQuestions :: App [QuestionDTO]
+getQuestions = do 
+  results <- runDb getAllQuestions 
+  pure $ (fmap (uncurry mkQuestionDTO) . groupQueryResults) results
 
 postQuestion :: SAS.AuthResult AuthenticatedUser -> CreateQuestionRequest -> App QuestionDTO
 postQuestion (SAS.Authenticated AuthenticatedUser {..}) CreateQuestionRequest {..} = do
   now <- liftIO getCurrentTime
-  when (null tags) (throwError err400 {errBody = "At least one tag is required"} )
+  when (null tags) (throwError err400 {errBody = "At least one tag is required"})
   createdQuestion <- runDb $ createQuestion (Question title content auId now now)
-  tagIds <- runDb $ createTags tags
-  runDb $ createQuestionTags tagIds (entityKey createdQuestion)
+  tags <- runDb $ createTags tags
+  runDb $ createQuestionTags (fmap entityKey tags) (entityKey createdQuestion)
   pure $ mkQuestionDTO createdQuestion tags
 postQuestion x _ = SAS.throwAll err401
 

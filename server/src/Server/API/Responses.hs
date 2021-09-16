@@ -8,9 +8,9 @@ import Data.Text (Text)
 import Data.Time (UTCTime)
 import Database.Esqueleto.Experimental
 import RIO
-import Server.Database.Model (Question (..))
+import Server.Database.Model (Question (..), Tag (..))
 
-mkQuestionDTO :: Entity Question -> [Text] -> QuestionDTO
+mkQuestionDTO :: Entity Question -> [Entity Tag] -> QuestionDTO
 mkQuestionDTO (Entity questionId question) tags =
   QuestionDTO
     { id = fromSqlKey questionId,
@@ -19,7 +19,7 @@ mkQuestionDTO (Entity questionId question) tags =
       userId = fromSqlKey uId,
       createdAt = cr,
       updatedAt = up,
-      tags = tags
+      tags = fmap mkTagDTO tags
     }
   where
     t = questionTitle question
@@ -28,6 +28,13 @@ mkQuestionDTO (Entity questionId question) tags =
     cr = questionCreatedAt question
     up = questionUpdatedAt question
 
+mkTagDTO :: Entity Tag -> TagDTO
+mkTagDTO (Entity tagId tag) =
+  TagDTO
+    { id = fromSqlKey tagId,
+      title = tagTitle tag
+    }
+
 data QuestionDTO = QuestionDTO
   { id :: Int64,
     title :: Text,
@@ -35,6 +42,10 @@ data QuestionDTO = QuestionDTO
     userId :: Int64,
     createdAt :: UTCTime,
     updatedAt :: UTCTime,
-    tags :: [Text]
+    tags :: [TagDTO]
   }
+  deriving (Eq, Show, ToJSON, FromJSON, Generic)
+
+data TagDTO = TagDTO
+  {id :: Int64, title :: Text}
   deriving (Eq, Show, ToJSON, FromJSON, Generic)

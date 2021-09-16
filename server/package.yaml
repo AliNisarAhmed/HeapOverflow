@@ -46,6 +46,7 @@ dependencies:
 - servant-auth-server
 - servant-docs
 - persistent-migration
+- appendmap
 
 default-extensions: 
 - NoImplicitPrelude

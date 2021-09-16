@@ -50,6 +50,7 @@ library
       DuplicateRecordFields
   build-depends:
       aeson
+    , appendmap
     , base >=4.7 && <5
     , bytestring
     , cryptonite
@@ -92,6 +93,7 @@ executable run-app-server
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , appendmap
     , base
     , bytestring
     , cryptonite
@@ -136,6 +138,7 @@ test-suite server-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , appendmap
     , base
     , bytestring
     , cryptonite

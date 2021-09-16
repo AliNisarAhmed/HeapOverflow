@@ -6,31 +6,48 @@ module Server.Database.Queries where
 import Control.Monad.Except (void)
 import Data.Text (Text)
 import Data.Time (UTCTime)
+import Database.Esqueleto hiding (from, on)
 import Database.Esqueleto.Experimental
 import Database.Persist (Entity (..))
 import qualified Database.Persist as P
-import RIO hiding ((^.))
+import RIO hiding (on, (^.))
+import qualified RIO.Map as Map
 import Server.API.Requests (SignupForm (..))
 import Server.Core.Password (hashPasswordWithSalt)
 import Server.Core.Types
 import Server.Database.Model
 import Server.Database.Setup
 
--- TAGS 
+-- TAGS
 
-createTags :: [Text] -> DbQuery [Key Tag]
-createTags tags = insertMany (fmap Tag tags)
-
+createTags :: [Text] -> DbQuery [Entity Tag]
+createTags tags = do
+  ids <- insertMany (fmap Tag tags)
+  select $ do
+    tag <- from $ table @Tag
+    where_ $ tag ^. TagId `in_` valList ids
+    pure tag
 
 createQuestionTags :: [Key Tag] -> Key Question -> DbQuery ()
 createQuestionTags tagIds questionId = void $ insertMany (fmap (QuestionTag questionId) tagIds)
 
 -- QUESTIONS
 
-getAllQuestions :: DbQuery [Entity Question]
+getAllQuestions :: DbQuery [(Entity Question, Entity Tag)]
 getAllQuestions =
   select $ do
-    from $ table @Question
+    (questions :& qTags :& tags) <-
+      from $
+        table @Question
+          `InnerJoin` table @QuestionTag
+          `on` ( \(qs :& qTags) ->
+                   qs ^. QuestionId ==. qTags ^. QuestionTagQuestionId
+               )
+          `InnerJoin` table @Tag
+          `on` ( \(_ :& qTags :& tags) ->
+                   qTags ^. QuestionTagTagId ==. tags ^. TagId
+               )
+    pure (questions, tags)
 
 createQuestion :: Question -> DbQuery (Entity Question)
 createQuestion = insertEntity

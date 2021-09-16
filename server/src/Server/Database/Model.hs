@@ -68,9 +68,11 @@ Answer json
 Tag json 
     title Text 
     UniqueTitle title
+    deriving Eq Show
 
 QuestionTag json 
     questionId QuestionId 
     tagId TagId
+    deriving Eq Show
 
 |]
