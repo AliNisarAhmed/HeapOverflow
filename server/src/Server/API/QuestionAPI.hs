@@ -15,7 +15,7 @@ import Servant
 import qualified Servant.Auth.Server as SAS
 import Server.API.AuthAPI (AuthenticatedUser (..))
 import Server.API.Requests
-import Server.API.Responses (QuestionDTO (QuestionDTO), mkQuestionDTO, TagDTO (TagDTO))
+import Server.API.Responses (QuestionDTO (QuestionDTO), TagDTO (TagDTO), mkQuestionDTO)
 import Server.Config (App (..))
 import Server.Core.Utils (groupQueryResults)
 import Server.Database.Model
@@ -25,7 +25,7 @@ import System.IO (print)
 
 type QuestionAPI =
   "api" :> "questions"
-    :> ( Get '[JSON] [QuestionDTO]
+    :> ( QueryParams "tag" Text :> Get '[JSON] [QuestionDTO]
            :<|> SAS.Auth '[SAS.Cookie, SAS.JWT] AuthenticatedUser
              :> ReqBody '[JSON] CreateQuestionRequest
              :> Post '[JSON] QuestionDTO
@@ -44,9 +44,9 @@ questionServer =
     :<|> modifyQuestion
     :<|> deleteQuestion
 
-getQuestions :: App [QuestionDTO]
-getQuestions = do 
-  results <- runDb getAllQuestions 
+getQuestions :: [Text] -> App [QuestionDTO]
+getQuestions tagFilters = do
+  results <- runDb $ getAllQuestions tagFilters
   pure $ (fmap (uncurry mkQuestionDTO) . groupQueryResults) results
 
 postQuestion :: SAS.AuthResult AuthenticatedUser -> CreateQuestionRequest -> App QuestionDTO

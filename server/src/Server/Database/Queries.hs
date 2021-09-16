@@ -33,8 +33,8 @@ createQuestionTags tagIds questionId = void $ insertMany (fmap (QuestionTag ques
 
 -- QUESTIONS
 
-getAllQuestions :: DbQuery [(Entity Question, Entity Tag)]
-getAllQuestions =
+getAllQuestions :: [Text] -> DbQuery [(Entity Question, Entity Tag)]
+getAllQuestions tagFilters =
   select $ do
     (questions :& qTags :& tags) <-
       from $
@@ -47,6 +47,7 @@ getAllQuestions =
           `on` ( \(_ :& qTags :& tags) ->
                    qTags ^. QuestionTagTagId ==. tags ^. TagId
                )
+    unless (null tagFilters) $ where_ $ tags ^. TagTitle `in_` valList tagFilters
     pure (questions, tags)
 
 createQuestion :: Question -> DbQuery (Entity Question)
