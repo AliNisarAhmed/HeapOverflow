@@ -15,13 +15,15 @@ import Servant
 import qualified Servant.Auth.Server as SAS
 import Server.API.AuthAPI (AuthenticatedUser (..))
 import Server.API.Requests
-import Server.API.Responses (QuestionDTO (QuestionDTO), TagDTO (TagDTO), mkQuestionDTO)
+import Server.API.Responses (QuestionDTO (..), TagDTO (TagDTO), mkQuestionDTO)
 import Server.Config (App (..))
 import Server.Core.Utils (groupQueryResults)
 import Server.Database.Model
 import Server.Database.Queries (createQuestion, createQuestionTags, createTags, deleteQuestionById, getAllQuestions, getQuestionById, updateQuestion)
 import Server.Database.Setup (DbQuery, runDb)
 import System.IO (print)
+import RIO.List (sortOn)
+import Data.Ord (Down(..))
 
 type QuestionAPI =
   "api" :> "questions"
@@ -47,7 +49,7 @@ questionServer =
 getQuestions :: [Text] -> App [QuestionDTO]
 getQuestions tagFilters = do
   results <- runDb $ getAllQuestions tagFilters
-  pure $ (fmap (uncurry mkQuestionDTO) . groupQueryResults) results
+  pure $ sortOn (Down . updatedAt) $ (fmap (uncurry mkQuestionDTO) . groupQueryResults) results
 
 postQuestion :: SAS.AuthResult AuthenticatedUser -> CreateQuestionRequest -> App QuestionDTO
 postQuestion (SAS.Authenticated AuthenticatedUser {..}) CreateQuestionRequest {..} = do

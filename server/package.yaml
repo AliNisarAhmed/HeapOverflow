@@ -47,6 +47,7 @@ dependencies:
 - servant-docs
 - persistent-migration
 - appendmap
+- servant-foreign
 
 default-extensions: 
 - NoImplicitPrelude

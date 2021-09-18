@@ -44,8 +44,8 @@ data QuestionDTO = QuestionDTO
     updatedAt :: UTCTime,
     tags :: [TagDTO]
   }
-  deriving (Eq, Show, ToJSON, FromJSON, Generic)
+  deriving (Eq, Show, Ord, ToJSON, FromJSON, Generic)
 
 data TagDTO = TagDTO
   {id :: Int64, title :: Text}
-  deriving (Eq, Show, ToJSON, FromJSON, Generic)
+  deriving (Eq, Show, Ord, ToJSON, FromJSON, Generic)

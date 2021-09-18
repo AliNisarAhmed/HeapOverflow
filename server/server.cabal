@@ -68,6 +68,7 @@ library
     , servant-auth
     , servant-auth-server
     , servant-docs
+    , servant-foreign
     , servant-options
     , servant-server
     , text
@@ -111,6 +112,7 @@ executable run-app-server
     , servant-auth
     , servant-auth-server
     , servant-docs
+    , servant-foreign
     , servant-options
     , servant-server
     , server
@@ -159,6 +161,7 @@ test-suite server-test
     , servant-auth
     , servant-auth-server
     , servant-docs
+    , servant-foreign
     , servant-options
     , servant-server
     , server

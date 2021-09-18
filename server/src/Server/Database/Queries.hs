@@ -22,10 +22,10 @@ import Server.Database.Setup
 
 createTags :: [Text] -> DbQuery [Entity Tag]
 createTags tags = do
-  ids <- insertMany (fmap Tag tags)
+  putMany (fmap Tag tags)
   select $ do
     tag <- from $ table @Tag
-    where_ $ tag ^. TagId `in_` valList ids
+    where_ $ tag ^. TagTitle `in_` valList tags
     pure tag
 
 createQuestionTags :: [Key Tag] -> Key Question -> DbQuery ()
